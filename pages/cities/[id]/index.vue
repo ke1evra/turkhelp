@@ -25,6 +25,11 @@
         </table>
       </div>
     </div>
+    <div class="row">
+      <div class="col">
+        <a :href="renderLink($route, '/residence')">ВНЖ</a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -49,6 +54,10 @@ export default {
       city.value = cities.value.find((item) => item.nameEng === id);
     };
 
+    const renderLink = (route: RouteLocationNormalizedLoaded, slug: string) => {
+      return route.fullPath + slug;
+    };
+
     onMounted(async () => {
       contentQuery.value = await queryContent("cities").findOne();
       cities.value = contentQuery.value.body;
@@ -58,6 +67,7 @@ export default {
     return {
       route,
       city,
+      renderLink,
     };
   },
 };

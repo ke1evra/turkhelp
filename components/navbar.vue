@@ -1,8 +1,5 @@
 <template>
-  <nav
-    class="navbar navbar-expand-lg bg-body-tertiary bg-dark"
-    data-bs-theme="dark"
-  >
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container">
       <a class="navbar-brand" href="/">TurkHelp</a>
       <button
@@ -24,6 +21,19 @@
             </NuxtLink>
           </li>
         </ul>
+        <div class="form-check form-switch">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="flexSwitchCheckDefault"
+            @click="changeDarkModeState"
+            v-model="isDarkMode"
+          />
+          <label class="form-check-label" for="flexSwitchCheckDefault"
+            >Dark mode</label
+          >
+        </div>
       </div>
     </div>
   </nav>
@@ -32,9 +42,26 @@
 <script lang="ts">
 import { ReactiveVariable } from "vue/macros";
 import { IHeaderLink } from "~/types";
+import { onMounted } from "#imports";
 
 export default {
   setup() {
+    const isDarkMode = ref(false);
+
+    const updateHtmlAttrs = () => {
+      useHead({
+        htmlAttrs: {
+          "data-bs-theme": isDarkMode.value ? "dark" : "light",
+        },
+      });
+    };
+
+    const changeDarkModeState = () => {
+      isDarkMode.value = !isDarkMode.value;
+
+      updateHtmlAttrs();
+    };
+
     const links: ReactiveVariable<IHeaderLink[]> = reactive([
       {
         name: "Города",
@@ -46,8 +73,18 @@ export default {
       },
     ]);
 
+    onMounted(() => {
+      const hours = new Date().getHours();
+      if (hours > 18 || hours < 9) {
+        isDarkMode.value = true;
+        updateHtmlAttrs();
+      }
+    });
+
     return {
       links,
+      changeDarkModeState,
+      isDarkMode,
     };
   },
 };
